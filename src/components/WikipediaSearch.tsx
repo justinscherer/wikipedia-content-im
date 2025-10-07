@@ -23,6 +23,7 @@ export function WikipediaSearch({ onArticleSelect }: WikipediaSearchProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [showResults, setShowResults] = useState(false)
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (query.length < 2) {
@@ -92,6 +93,20 @@ export function WikipediaSearch({ onArticleSelect }: WikipediaSearchProps) {
     }, 300)
   }, [query])
 
+  // Handle click outside to close results
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setShowResults(false)
+      }
+    }
+
+    if (showResults) {
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [showResults])
+
   const processExtractForDisplay = (extract: string): string => {
     if (!extract) return ''
     
@@ -126,6 +141,7 @@ export function WikipediaSearch({ onArticleSelect }: WikipediaSearchProps) {
     // Close search results immediately
     setShowResults(false)
     setQuery(result.title)
+    setResults([]) // Clear results to ensure clean state
     
     // Get the actual page ID for the article
     try {
@@ -151,7 +167,7 @@ export function WikipediaSearch({ onArticleSelect }: WikipediaSearchProps) {
   }
 
   return (
-    <div className="relative w-full max-w-md">
+    <div ref={containerRef} className="relative w-full max-w-md">
       <div className="relative">
         <MagnifyingGlass className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
         <Input
