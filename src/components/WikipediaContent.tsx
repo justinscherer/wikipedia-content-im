@@ -77,10 +77,18 @@ export function WikipediaContent({ title, pageid }: WikipediaContentProps) {
     
     // Remove Wikipedia-specific navigation elements and metadata
     processed = processed.replace(/<div[^>]*class="[^"]*navbox[^"]*"[^>]*>.*?<\/div>/gs, '')
-    processed = processed.replace(/<div[^>]*class="[^"]*infobox[^"]*"[^>]*>.*?<\/div>/gs, '')
     processed = processed.replace(/<div[^>]*class="[^"]*mw-references[^"]*"[^>]*>.*?<\/div>/gs, '')
     processed = processed.replace(/<div[^>]*class="[^"]*reflist[^"]*"[^>]*>.*?<\/div>/gs, '')
     processed = processed.replace(/<table[^>]*class="[^"]*navbox[^"]*"[^>]*>.*?<\/table>/gs, '')
+    
+    // Remove all variations of infobox content - comprehensive removal
+    processed = processed.replace(/<table[^>]*class="[^"]*infobox[^"]*"[^>]*>.*?<\/table>/gs, '')
+    processed = processed.replace(/<div[^>]*class="[^"]*infobox[^"]*"[^>]*>.*?<\/div>/gs, '')
+    processed = processed.replace(/<table[^>]*class="[^"]*vcard[^"]*"[^>]*>.*?<\/table>/gs, '')
+    processed = processed.replace(/<table[^>]*class="[^"]*biography[^"]*"[^>]*>.*?<\/table>/gs, '')
+    processed = processed.replace(/<table[^>]*class="[^"]*plainrowheaders[^"]*"[^>]*>.*?<\/table>/gs, '')
+    processed = processed.replace(/<table[^>]*class="[^"]*wikitable[^"]*"[^>]*style="[^"]*float:\s*right[^"]*"[^>]*>.*?<\/table>/gs, '')
+    processed = processed.replace(/<aside[^>]*class="[^"]*infobox[^"]*"[^>]*>.*?<\/aside>/gs, '')
     
     // Clean up edit links and other interface elements
     processed = processed.replace(/<span[^>]*class="[^"]*mw-editsection[^"]*"[^>]*>.*?<\/span>/gs, '')
