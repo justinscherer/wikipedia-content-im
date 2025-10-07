@@ -106,6 +106,15 @@
   @apply bg-secondary;
 }
 
+/* Formatting for search result extracts */
+.search-result-item strong {
+  font-weight: 600;
+}
+
+.search-result-item em {
+  font-style: italic;
+}
+
 /* Wikipedia content formatting - exact Codex typography */
 .wikipedia-content {
   @apply leading-relaxed;
@@ -154,16 +163,33 @@
 }
 
 /* Lists - Wikipedia style */
-.wikipedia-content ul {
+.wikipedia-content ul,
+.wikipedia-list {
   margin: 0.3em 0 0 1.6em;
   padding: 0;
 }
 
-.wikipedia-content ol {
+.wikipedia-content ol,
+.wikipedia-list-numbered {
   margin: 0.3em 0 0 3.2em;
   padding: 0;
 }
 
 .wikipedia-content li {
   margin-bottom: 0.1em;
+}
+
+/* Tables - Wikipedia style */
+.wikipedia-table {
+  @apply border-collapse border border-border mb-4;
+  font-size: 0.875em;
+}
+
+.wikipedia-table th,
+.wikipedia-table td {
+  @apply border border-border px-2 py-1;
+}
+
+.wikipedia-table th {
+  @apply bg-muted font-semibold;
 }

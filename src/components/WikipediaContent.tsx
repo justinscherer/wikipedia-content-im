@@ -26,8 +26,8 @@ export function WikipediaContent({ title, pageid }: WikipediaContentProps) {
     setError(null)
     
     try {
-      // Fetch page content using MediaWiki API
-      const apiUrl = `https://en.wikipedia.org/w/api.php?action=query&format=json&pageids=${pageid}&prop=extracts&exsectionformat=wiki&origin=*`
+      // Fetch page content using MediaWiki API with HTML formatting preserved
+      const apiUrl = `https://en.wikipedia.org/w/api.php?action=query&format=json&pageids=${pageid}&prop=extracts&exsectionformat=wiki&explaintext=false&origin=*`
       
       const response = await fetch(apiUrl)
       const data = await response.json()
@@ -51,37 +51,65 @@ export function WikipediaContent({ title, pageid }: WikipediaContentProps) {
   }
 
   const processWikipediaContent = (html: string): string => {
-    // Convert Wikipedia links to proper Codex format
-    html = html.replace(
-      /<a\s+href="([^"]*)"[^>]*>([^<]*)<\/a>/g,
-      '<a href="$1" class="wikipedia-link">$2</a>'
+    if (!html) return ''
+    
+    // First, ensure we have proper HTML structure
+    let processed = html
+    
+    // Convert Wikipedia links to proper Codex format while preserving original styling
+    processed = processed.replace(
+      /<a\s+href="([^"]*)"([^>]*)>([^<]*)<\/a>/g,
+      '<a href="$1" class="wikipedia-link"$2>$3</a>'
     )
     
     // Convert citation markers to superscript with Codex styling
-    html = html.replace(
+    processed = processed.replace(
       /\[(\d+)\]/g,
       '<sup><a href="#citation-$1" class="wikipedia-citation">[$1]</a></sup>'
     )
     
     // Ensure internal Wikipedia links have full URLs
-    html = html.replace(
+    processed = processed.replace(
       /href="\/wiki\//g,
       'href="https://en.wikipedia.org/wiki/'
     )
     
-    // Process headings to match Wikipedia hierarchy
-    html = html.replace(/<h2([^>]*)>/g, '<h2 class="wikipedia-heading-2"$1>')
-    html = html.replace(/<h3([^>]*)>/g, '<h3 class="wikipedia-heading-3"$1>')
-    html = html.replace(/<h4([^>]*)>/g, '<h4 class="wikipedia-heading-4"$1>')
+    // Process headings to match Wikipedia hierarchy exactly
+    processed = processed.replace(/<h2([^>]*)>/g, '<h2 class="wikipedia-heading-2"$1>')
+    processed = processed.replace(/<h3([^>]*)>/g, '<h3 class="wikipedia-heading-3"$1>')
+    processed = processed.replace(/<h4([^>]*)>/g, '<h4 class="wikipedia-heading-4"$1>')
+    processed = processed.replace(/<h5([^>]*)>/g, '<h5 class="wikipedia-heading-4"$1>')
+    processed = processed.replace(/<h6([^>]*)>/g, '<h6 class="wikipedia-heading-4"$1>')
     
-    // Format paragraphs with proper spacing
-    html = html.replace(/<p([^>]*)>/g, '<p class="wikipedia-paragraph"$1>')
+    // Format paragraphs with proper spacing - preserve existing classes
+    processed = processed.replace(/<p(\s+[^>]*)?>/g, (match, attrs) => {
+      const classAttr = attrs && attrs.includes('class=') ? attrs : (attrs || '') + ' class="wikipedia-paragraph"'
+      return `<p${classAttr.includes('wikipedia-paragraph') ? attrs || '' : classAttr}>`
+    })
+    processed = processed.replace(/<p>/g, '<p class="wikipedia-paragraph">')
     
-    // Handle bold and italic text with Wikipedia styling
-    html = html.replace(/<b([^>]*)>/g, '<strong class="wikipedia-bold"$1>')
-    html = html.replace(/<i([^>]*)>/g, '<em class="wikipedia-italic"$1>')
+    // Handle bold and italic text with Wikipedia styling - preserve existing formatting
+    processed = processed.replace(/<b(\s+[^>]*)?>/g, '<strong class="wikipedia-bold"$1>')
+    processed = processed.replace(/<\/b>/g, '</strong>')
+    processed = processed.replace(/<i(\s+[^>]*)?>/g, '<em class="wikipedia-italic"$1>')
+    processed = processed.replace(/<\/i>/g, '</em>')
     
-    return html
+    // Handle strong and em tags that might already exist
+    processed = processed.replace(/<strong(?!\s+class="wikipedia-bold")([^>]*)>/g, '<strong class="wikipedia-bold"$1>')
+    processed = processed.replace(/<em(?!\s+class="wikipedia-italic")([^>]*)>/g, '<em class="wikipedia-italic"$1>')
+    
+    // Handle Wikipedia-specific elements like infoboxes, tables, etc.
+    // Keep table formatting intact
+    processed = processed.replace(/<table([^>]*)>/g, '<table class="wikipedia-table"$1>')
+    
+    // Handle lists properly
+    processed = processed.replace(/<ul([^>]*)>/g, '<ul class="wikipedia-list"$1>')
+    processed = processed.replace(/<ol([^>]*)>/g, '<ol class="wikipedia-list wikipedia-list-numbered"$1>')
+    
+    // Handle div elements that might contain special formatting
+    processed = processed.replace(/<div([^>]*class="[^"]*mw-[^"]*"[^>]*)>/g, '<div$1>')
+    
+    return processed
   }
 
   const copyToClipboard = () => {
