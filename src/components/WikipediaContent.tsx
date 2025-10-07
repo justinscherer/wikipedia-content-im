@@ -76,6 +76,22 @@ export function WikipediaContent({ title, pageid }: WikipediaContentProps) {
     
     let processed = html
     
+    // Remove all media elements (images, audio, video, etc.)
+    processed = processed.replace(/<img[^>]*>/g, '')
+    processed = processed.replace(/<video[^>]*>.*?<\/video>/gs, '')
+    processed = processed.replace(/<audio[^>]*>.*?<\/audio>/gs, '')
+    processed = processed.replace(/<figure[^>]*>.*?<\/figure>/gs, '')
+    processed = processed.replace(/<picture[^>]*>.*?<\/picture>/gs, '')
+    processed = processed.replace(/<source[^>]*>/g, '')
+    processed = processed.replace(/<embed[^>]*>/g, '')
+    processed = processed.replace(/<object[^>]*>.*?<\/object>/gs, '')
+    
+    // Remove thumbs and gallery content
+    processed = processed.replace(/<div[^>]*class="[^"]*thumb[^"]*"[^>]*>.*?<\/div>/gs, '')
+    processed = processed.replace(/<div[^>]*class="[^"]*gallery[^"]*"[^>]*>.*?<\/div>/gs, '')
+    processed = processed.replace(/<div[^>]*class="[^"]*floatright[^"]*"[^>]*>.*?<\/div>/gs, '')
+    processed = processed.replace(/<div[^>]*class="[^"]*floatleft[^"]*"[^>]*>.*?<\/div>/gs, '')
+    
     // Remove Wikipedia-specific navigation elements and metadata
     processed = processed.replace(/<div[^>]*class="[^"]*navbox[^"]*"[^>]*>.*?<\/div>/gs, '')
     processed = processed.replace(/<div[^>]*class="[^"]*mw-references[^"]*"[^>]*>.*?<\/div>/gs, '')
@@ -136,19 +152,16 @@ export function WikipediaContent({ title, pageid }: WikipediaContentProps) {
     // Format paragraphs with proper spacing
     processed = processed.replace(/<p(?!\s+class="[^"]*wikipedia-paragraph[^"]*")([^>]*)>/g, '<p class="wikipedia-paragraph"$1>')
     
-    // Handle bold text with Wikipedia styling
-    processed = processed.replace(/<b(?!\s+class="[^"]*wikipedia-bold[^"]*")([^>]*)>/g, '<b class="wikipedia-bold"$1>')
-    processed = processed.replace(/<strong(?!\s+class="[^"]*wikipedia-bold[^"]*")([^>]*)>/g, '<strong class="wikipedia-bold"$1>')
-    
-    // Handle italic text more selectively - only apply to genuine emphasis, not random styling
-    // Remove generic i/em tags and only add italic class to specific cases
-    processed = processed.replace(/<i(?!\s+class="[^"]*wikipedia-italic[^"]*")([^>]*)>/g, '<i$1>')
-    processed = processed.replace(/<em(?!\s+class="[^"]*wikipedia-italic[^"]*")([^>]*)>/g, '<em$1>')
-    
-    // Only add italic styling to specific semantic cases like book titles, scientific names, etc.
-    // This is more conservative and avoids unwanted italics
-    processed = processed.replace(/<i([^>]*title="[^"]*"[^>]*)>/g, '<i class="wikipedia-italic"$1>')
-    processed = processed.replace(/<em([^>]*title="[^"]*"[^>]*)>/g, '<em class="wikipedia-italic"$1>')
+    // Completely remove bold and italic formatting from Wikipedia content
+    // This ensures clean, uniformly formatted text without unwanted styling
+    processed = processed.replace(/<b[^>]*>/g, '')
+    processed = processed.replace(/<\/b>/g, '')
+    processed = processed.replace(/<strong[^>]*>/g, '')
+    processed = processed.replace(/<\/strong>/g, '')
+    processed = processed.replace(/<i[^>]*>/g, '')
+    processed = processed.replace(/<\/i>/g, '')
+    processed = processed.replace(/<em[^>]*>/g, '')
+    processed = processed.replace(/<\/em>/g, '')
     
     // Handle tables properly
     processed = processed.replace(/<table(?!\s+class="[^"]*wikipedia-table[^"]*")([^>]*)>/g, '<table class="wikipedia-table"$1>')

@@ -158,10 +158,20 @@
   line-height: 1.6;
 }
 
-/* Text formatting - Reset and control italic styling */
+/* Text formatting - Normalize text styling */
+.wikipedia-content {
+  font-weight: normal;
+  font-style: normal;
+}
+
+.wikipedia-content b,
+.wikipedia-content strong {
+  font-weight: normal; /* Reset bold to normal weight */
+}
+
 .wikipedia-content i,
 .wikipedia-content em {
-  font-style: normal; /* Reset all italics by default */
+  font-style: normal; /* Reset italics to normal style */
 }
 
 .wikipedia-bold {
@@ -169,7 +179,7 @@
 }
 
 .wikipedia-italic {
-  font-style: italic; /* Only apply italics to explicitly classed elements */
+  font-style: italic;
 }
 
 /* Lists - Wikipedia style */
