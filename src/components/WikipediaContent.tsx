@@ -36,7 +36,8 @@ export function WikipediaContent({ title, pageid }: WikipediaContentProps) {
     try {
       // Fetch page content using MediaWiki API with HTML formatting preserved
       // Use parse action to get properly formatted HTML with links and styling
-      const apiUrl = `https://en.wikipedia.org/w/api.php?action=parse&format=json&pageid=${pageid}&prop=text&section=0&disableeditsection=true&origin=*`
+      // Remove section=0 to get all sections, not just the first one
+      const apiUrl = `https://en.wikipedia.org/w/api.php?action=parse&format=json&pageid=${pageid}&prop=text&disableeditsection=true&origin=*`
       
       const response = await fetch(apiUrl)
       const data = await response.json()
@@ -48,8 +49,8 @@ export function WikipediaContent({ title, pageid }: WikipediaContentProps) {
         htmlContent = processWikipediaContent(htmlContent)
         setContent(htmlContent)
       } else {
-        // Fallback to extracts if parse fails
-        const fallbackUrl = `https://en.wikipedia.org/w/api.php?action=query&format=json&pageids=${pageid}&prop=extracts&exsectionformat=wiki&explaintext=false&origin=*`
+        // Fallback to extracts if parse fails - get full article content
+        const fallbackUrl = `https://en.wikipedia.org/w/api.php?action=query&format=json&pageids=${pageid}&prop=extracts&exsectionformat=wiki&explaintext=false&exintro=false&origin=*`
         const fallbackResponse = await fetch(fallbackUrl)
         const fallbackData = await fallbackResponse.json()
         
