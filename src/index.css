@@ -1,1 +1,124 @@
-/* This is where custom CSS goes */
+@import 'tailwindcss';
+@import "tw-animate-css";
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+}
+
+:root {
+  /* Wikimedia Foundation Codex-inspired color palette */
+  --background: oklch(1 0 0); /* Pure white */
+  --foreground: oklch(0.15 0 0); /* Dark text */
+  
+  --card: oklch(0.98 0 0); /* Light gray background */
+  --card-foreground: oklch(0.15 0 0); /* Dark text on cards */
+  
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.15 0 0);
+  
+  /* Wikipedia blue for primary actions and links */
+  --primary: oklch(0.4 0.2 240); /* Wikipedia blue #0645ad */
+  --primary-foreground: oklch(1 0 0); /* White text on blue */
+  
+  --secondary: oklch(0.95 0 0); /* Very light gray */
+  --secondary-foreground: oklch(0.15 0 0);
+  
+  --muted: oklch(0.96 0 0); /* Muted background */
+  --muted-foreground: oklch(0.6 0 0); /* Muted text */
+  
+  --accent: oklch(0.96 0 0);
+  --accent-foreground: oklch(0.15 0 0);
+  
+  /* Red for errors and destructive actions */
+  --destructive: oklch(0.55 0.25 20); /* Wikimedia red */
+  --destructive-foreground: oklch(1 0 0);
+  
+  --border: oklch(0.9 0 0); /* Light border */
+  --input: oklch(0.9 0 0); /* Input border */
+  --ring: oklch(0.4 0.2 240); /* Focus ring matches primary */
+  
+  --radius: 0.375rem; /* Slightly rounded corners */
+}
+
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  
+  --radius-sm: calc(var(--radius) - 0.125rem);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 0.125rem);
+  --radius-xl: calc(var(--radius) + 0.25rem);
+}
+
+/* Wikipedia-style link styling */
+.wikipedia-link {
+  @apply text-primary no-underline;
+}
+
+.wikipedia-link:hover {
+  @apply underline;
+}
+
+/* Citation superscript styling */
+.wikipedia-citation {
+  @apply text-primary no-underline text-xs;
+  vertical-align: super;
+  line-height: 0;
+}
+
+.wikipedia-citation:hover {
+  @apply underline;
+}
+
+/* Search result styling */
+.search-result-item {
+  @apply p-3 rounded-md hover:bg-muted cursor-pointer transition-colors;
+}
+
+.search-result-item:hover {
+  @apply bg-secondary;
+}
+
+/* Content formatting */
+.wikipedia-content {
+  @apply leading-relaxed;
+}
+
+.wikipedia-content p {
+  @apply mb-4;
+}
+
+.wikipedia-content h1, .wikipedia-content h2, .wikipedia-content h3 {
+  @apply font-semibold mb-2 mt-4;
+}
+
+.wikipedia-content h1 {
+  @apply text-xl;
+}
+
+.wikipedia-content h2 {
+  @apply text-lg;
+}
+
+.wikipedia-content h3 {
+  @apply text-base;
+}
