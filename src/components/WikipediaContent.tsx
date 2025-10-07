@@ -136,11 +136,19 @@ export function WikipediaContent({ title, pageid }: WikipediaContentProps) {
     // Format paragraphs with proper spacing
     processed = processed.replace(/<p(?!\s+class="[^"]*wikipedia-paragraph[^"]*")([^>]*)>/g, '<p class="wikipedia-paragraph"$1>')
     
-    // Handle bold and italic text with Wikipedia styling
+    // Handle bold text with Wikipedia styling
     processed = processed.replace(/<b(?!\s+class="[^"]*wikipedia-bold[^"]*")([^>]*)>/g, '<b class="wikipedia-bold"$1>')
     processed = processed.replace(/<strong(?!\s+class="[^"]*wikipedia-bold[^"]*")([^>]*)>/g, '<strong class="wikipedia-bold"$1>')
-    processed = processed.replace(/<i(?!\s+class="[^"]*wikipedia-italic[^"]*")([^>]*)>/g, '<i class="wikipedia-italic"$1>')
-    processed = processed.replace(/<em(?!\s+class="[^"]*wikipedia-italic[^"]*")([^>]*)>/g, '<em class="wikipedia-italic"$1>')
+    
+    // Handle italic text more selectively - only apply to genuine emphasis, not random styling
+    // Remove generic i/em tags and only add italic class to specific cases
+    processed = processed.replace(/<i(?!\s+class="[^"]*wikipedia-italic[^"]*")([^>]*)>/g, '<i$1>')
+    processed = processed.replace(/<em(?!\s+class="[^"]*wikipedia-italic[^"]*")([^>]*)>/g, '<em$1>')
+    
+    // Only add italic styling to specific semantic cases like book titles, scientific names, etc.
+    // This is more conservative and avoids unwanted italics
+    processed = processed.replace(/<i([^>]*title="[^"]*"[^>]*)>/g, '<i class="wikipedia-italic"$1>')
+    processed = processed.replace(/<em([^>]*title="[^"]*"[^>]*)>/g, '<em class="wikipedia-italic"$1>')
     
     // Handle tables properly
     processed = processed.replace(/<table(?!\s+class="[^"]*wikipedia-table[^"]*")([^>]*)>/g, '<table class="wikipedia-table"$1>')
