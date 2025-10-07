@@ -98,6 +98,34 @@ export function WikipediaContent({ title, pageid }: WikipediaContentProps) {
     processed = processed.replace(/<div[^>]*class="[^"]*reflist[^"]*"[^>]*>.*?<\/div>/gs, '')
     processed = processed.replace(/<table[^>]*class="[^"]*navbox[^"]*"[^>]*>.*?<\/table>/gs, '')
     
+    // Remove specific unwanted sections by heading and content
+    // "See also" section
+    processed = processed.replace(/<h[1-6][^>]*>\s*See also\s*<\/h[1-6]>.*?(?=<h[1-6]|$)/gs, '')
+    processed = processed.replace(/<span[^>]*class="[^"]*mw-headline[^"]*"[^>]*>\s*See also\s*<\/span>.*?(?=<h[1-6]|<span[^>]*class="[^"]*mw-headline|$)/gs, '')
+    
+    // "References" section
+    processed = processed.replace(/<h[1-6][^>]*>\s*References\s*<\/h[1-6]>.*?(?=<h[1-6]|$)/gs, '')
+    processed = processed.replace(/<span[^>]*class="[^"]*mw-headline[^"]*"[^>]*>\s*References\s*<\/span>.*?(?=<h[1-6]|<span[^>]*class="[^"]*mw-headline|$)/gs, '')
+    
+    // "Further reading" section
+    processed = processed.replace(/<h[1-6][^>]*>\s*Further reading\s*<\/h[1-6]>.*?(?=<h[1-6]|$)/gs, '')
+    processed = processed.replace(/<span[^>]*class="[^"]*mw-headline[^"]*"[^>]*>\s*Further reading\s*<\/span>.*?(?=<h[1-6]|<span[^>]*class="[^"]*mw-headline|$)/gs, '')
+    
+    // "External links" section
+    processed = processed.replace(/<h[1-6][^>]*>\s*External links\s*<\/h[1-6]>.*?(?=<h[1-6]|$)/gs, '')
+    processed = processed.replace(/<span[^>]*class="[^"]*mw-headline[^"]*"[^>]*>\s*External links\s*<\/span>.*?(?=<h[1-6]|<span[^>]*class="[^"]*mw-headline|$)/gs, '')
+    
+    // "Notes" section
+    processed = processed.replace(/<h[1-6][^>]*>\s*Notes\s*<\/h[1-6]>.*?(?=<h[1-6]|$)/gs, '')
+    processed = processed.replace(/<span[^>]*class="[^"]*mw-headline[^"]*"[^>]*>\s*Notes\s*<\/span>.*?(?=<h[1-6]|<span[^>]*class="[^"]*mw-headline|$)/gs, '')
+    
+    // Remove navboxes and portal boxes
+    processed = processed.replace(/<div[^>]*class="[^"]*portal[^"]*"[^>]*>.*?<\/div>/gs, '')
+    processed = processed.replace(/<table[^>]*class="[^"]*portal[^"]*"[^>]*>.*?<\/table>/gs, '')
+    processed = processed.replace(/<div[^>]*class="[^"]*sister-project[^"]*"[^>]*>.*?<\/div>/gs, '')
+    processed = processed.replace(/<div[^>]*class="[^"]*noprint[^"]*"[^>]*>.*?<\/div>/gs, '')
+    processed = processed.replace(/<table[^>]*class="[^"]*metadata[^"]*"[^>]*>.*?<\/table>/gs, '')
+    
     // Remove all variations of infobox content - comprehensive removal
     processed = processed.replace(/<table[^>]*class="[^"]*infobox[^"]*"[^>]*>.*?<\/table>/gs, '')
     processed = processed.replace(/<div[^>]*class="[^"]*infobox[^"]*"[^>]*>.*?<\/div>/gs, '')
