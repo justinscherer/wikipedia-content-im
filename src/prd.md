@@ -68,17 +68,18 @@
 
 ### Visual Hierarchy & Layout
 - **Attention Direction**: Search at top, content display below with clear separation
-- **White Space Philosophy**: Generous spacing around content areas for focus
-- **Grid System**: Centered layout with maximum width constraints
-- **Responsive Approach**: Single-column layout that works across devices
-- **Content Density**: Balanced information display without overwhelming users
+- **White Space Philosophy**: Generous spacing around content areas for focus, optimized for mobile
+- **Grid System**: Centered layout with maximum width constraints, responsive padding
+- **Responsive Approach**: Mobile-first design optimized for 300-500px viewports with adaptive typography
+- **Content Density**: Balanced information display without overwhelming users, especially on small screens
 
 ### UI Elements & Component Selection
 - **Component Usage**: Cards for content sections, buttons for actions, clean input fields
 - **Component Customization**: Wikipedia-inspired styling with shadcn components
 - **Component States**: Clear hover states and loading indicators
 - **Icon Selection**: Phosphor icons for consistency and clarity
-- **Spacing System**: Consistent padding using Tailwind's spacing scale
+- **Spacing System**: Consistent padding using Tailwind's spacing scale with mobile-responsive adjustments
+- **Mobile Adaptation**: Stacked button layouts, condensed text, optimized touch targets for narrow viewports
 
 ### Accessibility & Readability
 - **Contrast Goal**: WCAG AA compliance minimum, AAA where possible

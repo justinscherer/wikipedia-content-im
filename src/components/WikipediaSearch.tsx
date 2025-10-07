@@ -167,14 +167,14 @@ export function WikipediaSearch({ onArticleSelect }: WikipediaSearchProps) {
   }
 
   return (
-    <div ref={containerRef} className="relative w-full max-w-md">
+    <div ref={containerRef} className="relative w-full">
       <div className="relative">
         <MagnifyingGlass className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
         <Input
           placeholder="Search Wikipedia articles..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="pl-10 pr-4"
+          className="pl-10 pr-4 text-sm"
           onFocus={() => query.length >= 2 && setShowResults(true)}
         />
         {isLoading && (
@@ -185,24 +185,24 @@ export function WikipediaSearch({ onArticleSelect }: WikipediaSearchProps) {
       </div>
 
       {showResults && results.length > 0 && (
-        <Card className="absolute z-50 w-full mt-1 max-h-80 overflow-y-auto">
+        <Card className="absolute z-50 w-full mt-1 max-h-64 sm:max-h-80 overflow-y-auto">
           <CardContent className="p-0">
             {results.map((result) => (
               <div
                 key={result.pageid}
-                className="search-result-item border-b last:border-b-0"
+                className="search-result-item border-b last:border-b-0 p-2 sm:p-3"
                 onClick={() => handleArticleClick(result)}
               >
-                <div className="flex items-start gap-3">
+                <div className="flex items-start gap-2 sm:gap-3">
                   {result.thumbnail && (
                     <img
                       src={result.thumbnail.source}
                       alt=""
-                      className="w-12 h-12 object-cover rounded flex-shrink-0"
+                      className="w-10 h-10 sm:w-12 sm:h-12 object-cover rounded flex-shrink-0"
                     />
                   )}
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-medium text-sm text-foreground mb-1 truncate">
+                    <h3 className="font-medium text-xs sm:text-sm text-foreground mb-1 truncate">
                       {result.title}
                     </h3>
                     <div className="text-xs text-muted-foreground line-clamp-2">
@@ -222,7 +222,7 @@ export function WikipediaSearch({ onArticleSelect }: WikipediaSearchProps) {
 
       {showResults && results.length === 0 && !isLoading && query.length >= 2 && (
         <Card className="absolute z-50 w-full mt-1">
-          <CardContent className="p-4 text-center text-muted-foreground text-sm">
+          <CardContent className="p-3 sm:p-4 text-center text-muted-foreground text-xs sm:text-sm">
             No articles found for "{query}"
           </CardContent>
         </Card>

@@ -14,24 +14,24 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-background p-6">
-      <div className="max-w-6xl mx-auto space-y-6">
+    <div className="min-h-screen bg-background p-3 sm:p-6">
+      <div className="max-w-6xl mx-auto space-y-4 sm:space-y-6">
         {/* Header */}
-        <div className="text-center space-y-2">
-          <h1 className="text-3xl font-bold text-foreground">
+        <div className="text-center space-y-1 sm:space-y-2">
+          <h1 className="text-xl sm:text-3xl font-bold text-foreground leading-tight">
             Wikipedia Content Importer
           </h1>
-          <p className="text-muted-foreground">
-            Prototype for Figma plugin development - Search and import Wikipedia content with proper formatting
+          <p className="text-sm sm:text-base text-muted-foreground px-2">
+            Search and import Wikipedia content with proper formatting
           </p>
         </div>
 
         {/* Search Section */}
         <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Search Wikipedia Articles</CardTitle>
+          <CardHeader className="pb-3 sm:pb-6">
+            <CardTitle className="text-base sm:text-lg">Search Wikipedia Articles</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-0">
             <WikipediaSearch onArticleSelect={handleArticleSelect} />
           </CardContent>
         </Card>

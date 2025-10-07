@@ -236,29 +236,31 @@ export function WikipediaContent({ title, pageid }: WikipediaContentProps) {
   }
 
   return (
-    <Card className="w-full max-w-4xl">
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="text-xl font-semibold">{title}</CardTitle>
-        <div className="flex gap-2">
+    <Card className="w-full">
+      <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0 pb-3 sm:pb-6">
+        <CardTitle className="text-lg sm:text-xl font-semibold pr-0 sm:pr-4 leading-tight">{title}</CardTitle>
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-2 min-w-0">
           <Button
             onClick={fetchContent}
             disabled={isLoading}
             variant="outline"
             size="sm"
+            className="text-xs sm:text-sm"
           >
             {isLoading ? (
               <>
-                <Spinner className="w-4 h-4 mr-2 animate-spin" />
+                <Spinner className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2 animate-spin" />
                 Loading...
               </>
             ) : (
-              'Refresh Content'
+              'Refresh'
             )}
           </Button>
           <Button
             variant="ghost"
             size="sm"
             asChild
+            className="text-xs sm:text-sm"
           >
             <a
               href={`https://en.wikipedia.org/wiki/${encodeURIComponent(title)}`}
@@ -266,40 +268,41 @@ export function WikipediaContent({ title, pageid }: WikipediaContentProps) {
               rel="noopener noreferrer"
               className="flex items-center"
             >
-              <ArrowSquareOut className="w-4 h-4 mr-2" />
-              View on Wikipedia
+              <ArrowSquareOut className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">View on Wikipedia</span>
+              <span className="sm:hidden">Wikipedia</span>
             </a>
           </Button>
         </div>
       </CardHeader>
       
-      <CardContent>
+      <CardContent className="pt-0">
         {error && (
-          <div className="p-4 bg-destructive/10 text-destructive rounded-md">
+          <div className="p-3 sm:p-4 bg-destructive/10 text-destructive rounded-md text-sm">
             {error}
           </div>
         )}
         
         {content && (
-          <div className="space-y-4">
-            <div className="flex gap-2 mb-4">
-              <Button onClick={copyToClipboard} variant="outline" size="sm">
+          <div className="space-y-3 sm:space-y-4">
+            <div className="flex flex-col sm:flex-row gap-2 mb-3 sm:mb-4">
+              <Button onClick={copyToClipboard} variant="outline" size="sm" className="text-xs sm:text-sm">
                 Copy Text
               </Button>
-              <Button onClick={copyFormattedHtml} variant="outline" size="sm">
+              <Button onClick={copyFormattedHtml} variant="outline" size="sm" className="text-xs sm:text-sm">
                 Copy HTML
               </Button>
             </div>
             
             <div
-              className="wikipedia-content border rounded-md p-6 bg-muted/20"
+              className="wikipedia-content border rounded-md p-3 sm:p-6 bg-muted/20 overflow-x-auto"
               dangerouslySetInnerHTML={{ __html: content }}
             />
           </div>
         )}
         
         {!content && !isLoading && !error && (
-          <div className="text-center py-8 text-muted-foreground">
+          <div className="text-center py-6 sm:py-8 text-muted-foreground text-sm">
             Content will load automatically...
           </div>
         )}
