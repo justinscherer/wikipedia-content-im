@@ -51,13 +51,13 @@ export function WikipediaContent({ title, pageid }: WikipediaContentProps) {
   }
 
   const processWikipediaContent = (html: string): string => {
-    // Convert Wikipedia links to proper format
+    // Convert Wikipedia links to proper Codex format
     html = html.replace(
       /<a\s+href="([^"]*)"[^>]*>([^<]*)<\/a>/g,
       '<a href="$1" class="wikipedia-link">$2</a>'
     )
     
-    // Convert citation markers to superscript
+    // Convert citation markers to superscript with Codex styling
     html = html.replace(
       /\[(\d+)\]/g,
       '<sup><a href="#citation-$1" class="wikipedia-citation">[$1]</a></sup>'
@@ -68,6 +68,18 @@ export function WikipediaContent({ title, pageid }: WikipediaContentProps) {
       /href="\/wiki\//g,
       'href="https://en.wikipedia.org/wiki/'
     )
+    
+    // Process headings to match Wikipedia hierarchy
+    html = html.replace(/<h2([^>]*)>/g, '<h2 class="wikipedia-heading-2"$1>')
+    html = html.replace(/<h3([^>]*)>/g, '<h3 class="wikipedia-heading-3"$1>')
+    html = html.replace(/<h4([^>]*)>/g, '<h4 class="wikipedia-heading-4"$1>')
+    
+    // Format paragraphs with proper spacing
+    html = html.replace(/<p([^>]*)>/g, '<p class="wikipedia-paragraph"$1>')
+    
+    // Handle bold and italic text with Wikipedia styling
+    html = html.replace(/<b([^>]*)>/g, '<strong class="wikipedia-bold"$1>')
+    html = html.replace(/<i([^>]*)>/g, '<em class="wikipedia-italic"$1>')
     
     return html
   }
