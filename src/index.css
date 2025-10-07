@@ -150,7 +150,7 @@
   color: #000;
   font-size: 1.2em;
   line-height: 1.6;
-  font-family: "Libre Baskerville", "Georgia", "Times", serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Lato, Helvetica, Arial, sans-serif;
 }
 
 .wikipedia-heading-4 {
@@ -158,7 +158,7 @@
   color: #000;
   font-size: 1em;
   line-height: 1.6;
-  font-family: "Libre Baskerville", "Georgia", "Times", serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Lato, Helvetica, Arial, sans-serif;
 }
 
 /* Text formatting - Normalize text styling */
