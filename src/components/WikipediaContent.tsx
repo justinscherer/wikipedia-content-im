@@ -119,6 +119,18 @@ export function WikipediaContent({ title, pageid }: WikipediaContentProps) {
     processed = processed.replace(/<h[1-6][^>]*>\s*Notes\s*<\/h[1-6]>.*?(?=<h[1-6]|$)/gs, '')
     processed = processed.replace(/<span[^>]*class="[^"]*mw-headline[^"]*"[^>]*>\s*Notes\s*<\/span>.*?(?=<h[1-6]|<span[^>]*class="[^"]*mw-headline|$)/gs, '')
     
+    // "Bibliography" section - all variations
+    processed = processed.replace(/<h[1-6][^>]*>\s*Bibliography\s*<\/h[1-6]>.*?(?=<h[1-6]|$)/gs, '')
+    processed = processed.replace(/<span[^>]*class="[^"]*mw-headline[^"]*"[^>]*>\s*Bibliography\s*<\/span>.*?(?=<h[1-6]|<span[^>]*class="[^"]*mw-headline|$)/gs, '')
+    
+    // "Sources" section
+    processed = processed.replace(/<h[1-6][^>]*>\s*Sources\s*<\/h[1-6]>.*?(?=<h[1-6]|$)/gs, '')
+    processed = processed.replace(/<span[^>]*class="[^"]*mw-headline[^"]*"[^>]*>\s*Sources\s*<\/span>.*?(?=<h[1-6]|<span[^>]*class="[^"]*mw-headline|$)/gs, '')
+    
+    // "Works cited" section
+    processed = processed.replace(/<h[1-6][^>]*>\s*Works cited\s*<\/h[1-6]>.*?(?=<h[1-6]|$)/gs, '')
+    processed = processed.replace(/<span[^>]*class="[^"]*mw-headline[^"]*"[^>]*>\s*Works cited\s*<\/span>.*?(?=<h[1-6]|<span[^>]*class="[^"]*mw-headline|$)/gs, '')
+    
     // Remove navboxes and portal boxes
     processed = processed.replace(/<div[^>]*class="[^"]*portal[^"]*"[^>]*>.*?<\/div>/gs, '')
     processed = processed.replace(/<table[^>]*class="[^"]*portal[^"]*"[^>]*>.*?<\/table>/gs, '')
