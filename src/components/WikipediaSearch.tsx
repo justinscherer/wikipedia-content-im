@@ -123,6 +123,10 @@ export function WikipediaSearch({ onArticleSelect }: WikipediaSearchProps) {
   }
 
   const handleArticleClick = async (result: SearchResult) => {
+    // Close search results immediately
+    setShowResults(false)
+    setQuery(result.title)
+    
     // Get the actual page ID for the article
     try {
       const pageIdUrl = `https://en.wikipedia.org/w/api.php?action=query&format=json&titles=${encodeURIComponent(result.title)}&origin=*`
@@ -144,9 +148,6 @@ export function WikipediaSearch({ onArticleSelect }: WikipediaSearchProps) {
       console.error('Failed to get page ID:', error)
       onArticleSelect(result.title, result.pageid)
     }
-    
-    setQuery(result.title)
-    setShowResults(false)
   }
 
   return (

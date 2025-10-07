@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { ArrowSquareOut, Spinner } from '@phosphor-icons/react'
@@ -21,26 +21,46 @@ export function WikipediaContent({ title, pageid }: WikipediaContentProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  // Automatically fetch content when component mounts or title/pageid changes
+  useEffect(() => {
+    if (title && pageid) {
+      fetchContent()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [title, pageid])
+
   const fetchContent = async () => {
     setIsLoading(true)
     setError(null)
     
     try {
       // Fetch page content using MediaWiki API with HTML formatting preserved
-      const apiUrl = `https://en.wikipedia.org/w/api.php?action=query&format=json&pageids=${pageid}&prop=extracts&exsectionformat=wiki&explaintext=false&origin=*`
+      // Use parse action to get properly formatted HTML with links and styling
+      const apiUrl = `https://en.wikipedia.org/w/api.php?action=parse&format=json&pageid=${pageid}&prop=text&section=0&disableeditsection=true&origin=*`
       
       const response = await fetch(apiUrl)
       const data = await response.json()
       
-      if (data.query?.pages?.[pageid]) {
-        const page = data.query.pages[pageid]
-        let htmlContent = page.extract || ''
+      if (data.parse?.text?.['*']) {
+        let htmlContent = data.parse.text['*']
         
         // Process the content to add proper Wikipedia-style formatting
         htmlContent = processWikipediaContent(htmlContent)
         setContent(htmlContent)
       } else {
-        setError('Article content not found')
+        // Fallback to extracts if parse fails
+        const fallbackUrl = `https://en.wikipedia.org/w/api.php?action=query&format=json&pageids=${pageid}&prop=extracts&exsectionformat=wiki&explaintext=false&origin=*`
+        const fallbackResponse = await fetch(fallbackUrl)
+        const fallbackData = await fallbackResponse.json()
+        
+        if (fallbackData.query?.pages?.[pageid]) {
+          const page = fallbackData.query.pages[pageid]
+          let htmlContent = page.extract || ''
+          htmlContent = processWikipediaContent(htmlContent)
+          setContent(htmlContent)
+        } else {
+          setError('Article content not found')
+        }
       }
     } catch (err) {
       setError('Failed to fetch article content')
@@ -53,61 +73,78 @@ export function WikipediaContent({ title, pageid }: WikipediaContentProps) {
   const processWikipediaContent = (html: string): string => {
     if (!html) return ''
     
-    // First, ensure we have proper HTML structure
     let processed = html
     
-    // Convert Wikipedia links to proper Codex format while preserving original styling
+    // Remove Wikipedia-specific navigation elements and metadata
+    processed = processed.replace(/<div[^>]*class="[^"]*navbox[^"]*"[^>]*>.*?<\/div>/gs, '')
+    processed = processed.replace(/<div[^>]*class="[^"]*infobox[^"]*"[^>]*>.*?<\/div>/gs, '')
+    processed = processed.replace(/<div[^>]*class="[^"]*mw-references[^"]*"[^>]*>.*?<\/div>/gs, '')
+    processed = processed.replace(/<div[^>]*class="[^"]*reflist[^"]*"[^>]*>.*?<\/div>/gs, '')
+    processed = processed.replace(/<table[^>]*class="[^"]*navbox[^"]*"[^>]*>.*?<\/table>/gs, '')
+    
+    // Clean up edit links and other interface elements
+    processed = processed.replace(/<span[^>]*class="[^"]*mw-editsection[^"]*"[^>]*>.*?<\/span>/gs, '')
+    processed = processed.replace(/<div[^>]*class="[^"]*mw-parser-output[^"]*"[^>]*>/g, '<div class="mw-parser-output wikipedia-content">')
+    
+    // Ensure internal Wikipedia links have full URLs and proper styling
     processed = processed.replace(
-      /<a\s+href="([^"]*)"([^>]*)>([^<]*)<\/a>/g,
-      '<a href="$1" class="wikipedia-link"$2>$3</a>'
+      /<a\s+href="\/wiki\/([^"]*)"([^>]*)>/g,
+      '<a href="https://en.wikipedia.org/wiki/$1" class="wikipedia-link" target="_blank" rel="noopener noreferrer"$2>'
     )
     
-    // Convert citation markers to superscript with Codex styling
+    // Style external links properly
     processed = processed.replace(
-      /\[(\d+)\]/g,
+      /<a\s+href="([^"]*)"([^>]*(?:class="[^"]*external[^"]*"[^>]*))>/g,
+      '<a href="$1" class="wikipedia-link" target="_blank" rel="noopener noreferrer"$2>'
+    )
+    
+    // Add class to all other links that don't already have wikipedia-link class
+    processed = processed.replace(
+      /<a\s+href="([^"]*)"(?![^>]*class="[^"]*wikipedia-link[^"]*")([^>]*)>/g,
+      '<a href="$1" class="wikipedia-link"$2>'
+    )
+    
+    // Convert citation markers to superscript with Codex styling  
+    processed = processed.replace(
+      /<sup[^>]*><a[^>]*href="[^"]*#[^"]*"[^>]*>\[(\d+)\]<\/a><\/sup>/g,
       '<sup><a href="#citation-$1" class="wikipedia-citation">[$1]</a></sup>'
     )
     
-    // Ensure internal Wikipedia links have full URLs
+    // Handle citation references that may not be in sup tags
     processed = processed.replace(
-      /href="\/wiki\//g,
-      'href="https://en.wikipedia.org/wiki/'
+      /<a[^>]*href="[^"]*#[^"]*"[^>]*>\[(\d+)\]<\/a>/g,
+      '<sup><a href="#citation-$1" class="wikipedia-citation">[$1]</a></sup>'
     )
     
     // Process headings to match Wikipedia hierarchy exactly
+    processed = processed.replace(/<h1([^>]*)>/g, '<h1 class="wikipedia-heading-2"$1>')
     processed = processed.replace(/<h2([^>]*)>/g, '<h2 class="wikipedia-heading-2"$1>')
     processed = processed.replace(/<h3([^>]*)>/g, '<h3 class="wikipedia-heading-3"$1>')
     processed = processed.replace(/<h4([^>]*)>/g, '<h4 class="wikipedia-heading-4"$1>')
     processed = processed.replace(/<h5([^>]*)>/g, '<h5 class="wikipedia-heading-4"$1>')
     processed = processed.replace(/<h6([^>]*)>/g, '<h6 class="wikipedia-heading-4"$1>')
     
-    // Format paragraphs with proper spacing - preserve existing classes
-    processed = processed.replace(/<p(\s+[^>]*)?>/g, (match, attrs) => {
-      const classAttr = attrs && attrs.includes('class=') ? attrs : (attrs || '') + ' class="wikipedia-paragraph"'
-      return `<p${classAttr.includes('wikipedia-paragraph') ? attrs || '' : classAttr}>`
-    })
-    processed = processed.replace(/<p>/g, '<p class="wikipedia-paragraph">')
+    // Format paragraphs with proper spacing
+    processed = processed.replace(/<p(?!\s+class="[^"]*wikipedia-paragraph[^"]*")([^>]*)>/g, '<p class="wikipedia-paragraph"$1>')
     
-    // Handle bold and italic text with Wikipedia styling - preserve existing formatting
-    processed = processed.replace(/<b(\s+[^>]*)?>/g, '<strong class="wikipedia-bold"$1>')
-    processed = processed.replace(/<\/b>/g, '</strong>')
-    processed = processed.replace(/<i(\s+[^>]*)?>/g, '<em class="wikipedia-italic"$1>')
-    processed = processed.replace(/<\/i>/g, '</em>')
+    // Handle bold and italic text with Wikipedia styling
+    processed = processed.replace(/<b(?!\s+class="[^"]*wikipedia-bold[^"]*")([^>]*)>/g, '<b class="wikipedia-bold"$1>')
+    processed = processed.replace(/<strong(?!\s+class="[^"]*wikipedia-bold[^"]*")([^>]*)>/g, '<strong class="wikipedia-bold"$1>')
+    processed = processed.replace(/<i(?!\s+class="[^"]*wikipedia-italic[^"]*")([^>]*)>/g, '<i class="wikipedia-italic"$1>')
+    processed = processed.replace(/<em(?!\s+class="[^"]*wikipedia-italic[^"]*")([^>]*)>/g, '<em class="wikipedia-italic"$1>')
     
-    // Handle strong and em tags that might already exist
-    processed = processed.replace(/<strong(?!\s+class="wikipedia-bold")([^>]*)>/g, '<strong class="wikipedia-bold"$1>')
-    processed = processed.replace(/<em(?!\s+class="wikipedia-italic")([^>]*)>/g, '<em class="wikipedia-italic"$1>')
+    // Handle tables properly
+    processed = processed.replace(/<table(?!\s+class="[^"]*wikipedia-table[^"]*")([^>]*)>/g, '<table class="wikipedia-table"$1>')
     
-    // Handle Wikipedia-specific elements like infoboxes, tables, etc.
-    // Keep table formatting intact
-    processed = processed.replace(/<table([^>]*)>/g, '<table class="wikipedia-table"$1>')
+    // Handle lists properly  
+    processed = processed.replace(/<ul(?!\s+class="[^"]*wikipedia-list[^"]*")([^>]*)>/g, '<ul class="wikipedia-list"$1>')
+    processed = processed.replace(/<ol(?!\s+class="[^"]*wikipedia-list[^"]*")([^>]*)>/g, '<ol class="wikipedia-list wikipedia-list-numbered"$1>')
     
-    // Handle lists properly
-    processed = processed.replace(/<ul([^>]*)>/g, '<ul class="wikipedia-list"$1>')
-    processed = processed.replace(/<ol([^>]*)>/g, '<ol class="wikipedia-list wikipedia-list-numbered"$1>')
+    // Remove any script tags for security
+    processed = processed.replace(/<script[^>]*>.*?<\/script>/gs, '')
     
-    // Handle div elements that might contain special formatting
-    processed = processed.replace(/<div([^>]*class="[^"]*mw-[^"]*"[^>]*)>/g, '<div$1>')
+    // Remove style attributes that might conflict with our styling
+    processed = processed.replace(/\sstyle="[^"]*"/g, '')
     
     return processed
   }
@@ -145,7 +182,7 @@ export function WikipediaContent({ title, pageid }: WikipediaContentProps) {
                 Loading...
               </>
             ) : (
-              'Import Content'
+              'Refresh Content'
             )}
           </Button>
           <Button
@@ -193,7 +230,7 @@ export function WikipediaContent({ title, pageid }: WikipediaContentProps) {
         
         {!content && !isLoading && !error && (
           <div className="text-center py-8 text-muted-foreground">
-            Click "Import Content" to fetch the Wikipedia article content
+            Content will load automatically...
           </div>
         )}
       </CardContent>
